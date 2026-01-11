@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Weather App</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background: linear-gradient(to right, #74ebd5, #ACB6E5);
+      color: #bc1515;
+      text-align: center;
+      padding-top: 50px;
+    }
+    .container {
+      background: white;
+      border-radius: 8px;
+      padding: 30px;
+      max-width: 400px;
+      margin: auto;
+      box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    }
+    input {
+      padding: 10px;
+      width: 70%;
+      border: 1px solid #ccc;
+      border-radius: 4px;
+    }
+    button {
+      padding: 10px 15px;
+      margin-left: 10px;
+      border: none;
+      background-color: #3498db;
+      color: white;
+      border-radius: 4px;
+      cursor: pointer;
+    }
+    button:hover {
+      background-color: #2980b9;
+    }
+    #weatherResult {
+      margin-top: 20px;
+    }
+    img {
+      margin-top: 10px;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>🌤 Weather App</h1>
+    <input type="text" id="cityInput" placeholder="Enter city name" />
+    <button onclick="getWeather()">Get Weather</button>
+    <div id="weatherResult"></div>
+  </div>
+
+  <script>
+    async function getWeather() {
+      const city = document.getElementById("cityInput").value.trim();
+      const apiKey = '8b85e8c02e8142b580635419252110'; // Your provided key
+      const resultBox = document.getElementById("weatherResult");
+
+      if (!city) {
+        resultBox.innerHTML = "<p style='color:red;'>Please enter a city name.</p>";
+        return;
+      }
+
+      resultBox.innerHTML = "Loading...";
+
+      const url = `http://api.weatherapi.com/v1/current.json?key=${apiKey}&q=${city}&aqi=yes`;
+
+      try {
+        const response = await fetch(url);
+        if (!response.ok) {
+          throw new Error("City not found");
+        }
+
+        const data = await response.json();
+        const weather = data.current;
+        const location = data.location;
+
+        resultBox.innerHTML = `
+          <h2>${location.name}, ${location.country}</h2>
+          <p>🌡 Temperature: ${weather.temp_c}°C</p>
+          <p>☁️ Condition: ${weather.condition.text}</p>
+          <p>💧 Humidity: ${weather.humidity}%</p>
+          <p>💨 Wind: ${weather.wind_kph} kph</p>
+          <img src="https:${weather.condition.icon}" alt="Weather icon">
+        `;
+      } catch (error) {
+        resultBox.innerHTML = `<p style='color:red;'>${error.message}</p>`;
+      }
+    }
+  </script>
+</body>
+</html>
